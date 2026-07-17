@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./SignupPage.css";
+import FooterLinks from "./FooterLinks";
 
 const initialSignupForm = {
   name: "",
@@ -147,12 +148,7 @@ export default function SignupPage({ onSwitchToLogin }) {
           </li>
         </ul>
 
-        <div className="panel-footer">
-          <button type="button" className="footer-link">Terms</button>
-          <button type="button" className="footer-link">Privacy</button>
-          <button type="button" className="footer-link">Docs</button>
-          <button type="button" className="footer-link">Help</button>
-        </div>
+        <FooterLinks />
       </div>
 
       <div className="panel-right">

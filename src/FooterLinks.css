@@ -1,0 +1,157 @@
+/* Footer container
+   Keep this component inside .panel-left so it follows the exact
+   left alignment and padding of the signup page panel. */
+.streamline-footer {
+  position: static;
+  margin-top: auto;
+  padding-top: 40px;
+  align-self: flex-start;
+  z-index: 10;
+}
+
+.footer-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.footer-link-btn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #b8afaf;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.footer-link-btn:hover,
+.footer-link-btn:focus-visible {
+  color: #ff7517;
+  opacity: 1;
+}
+
+.footer-link-btn:focus-visible {
+  outline: 2px solid rgba(255, 117, 23, 0.45);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.footer-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.footer-modal-box {
+  background-color: #2c2727;
+  border: 1px solid rgba(246, 244, 244, 0.08);
+  color: #f6f4f4;
+  padding: 32px;
+  border-radius: 12px;
+  max-width: 540px;
+  width: min(90vw, 540px);
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.footer-modal-title {
+  margin: 0 0 20px;
+  color: #ff7517;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.footer-modal-body {
+  overflow-y: auto;
+  padding-right: 12px;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.footer-modal-body::-webkit-scrollbar { width: 6px; }
+.footer-modal-body::-webkit-scrollbar-track { background: transparent; }
+.footer-modal-body::-webkit-scrollbar-thumb {
+  background-color: rgba(246, 244, 244, 0.15);
+  border-radius: 10px;
+}
+.footer-modal-body::-webkit-scrollbar-thumb:hover { background-color: #ff7517; }
+
+.modal-scroll-content p {
+  line-height: 1.6;
+  color: #f6f4f4;
+  opacity: 0.9;
+  font-size: 14.5px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.modal-scroll-content h3 {
+  font-size: 16px;
+  color: #ff7517;
+  margin-top: 24px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.modal-scroll-content ul,
+.modal-scroll-content ol {
+  padding-left: 20px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.modal-scroll-content li {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #f6f4f4;
+  opacity: 0.85;
+  margin-bottom: 10px;
+}
+
+.footer-modal-close-btn {
+  align-self: center;
+  margin-top: 24px;
+  background-color: #ff7517;
+  color: #2c2727;
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.footer-modal-close-btn:hover {
+  background-color: #e5640e;
+  transform: translateY(-1px);
+}
+.footer-modal-close-btn:active { transform: translateY(1px); }
+
+@media (max-width: 900px) {
+  .streamline-footer {
+    margin-top: 40px;
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-nav {
+    flex-wrap: wrap;
+    gap: 16px 22px;
+  }
+  .footer-modal-box { padding: 24px 20px; }
+}
