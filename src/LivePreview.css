@@ -10,6 +10,8 @@
   --card-dark: #3e3939;
   --text-light: #f6f4f4;
   --text-muted: #b8afaf;
+  --brown: #322c2c;
+  --bg: #231e1e;
 }
 
 body {
@@ -17,7 +19,7 @@ body {
     margin: 0;
     background: radial-gradient(
         circle at 15% 20%,
-        rgba(255, 117, 23, 0.08),
+        var(--bg),
         transparent 40%),
         var(--panel-dark);
     color: var(--text-light);
@@ -81,22 +83,22 @@ button {
 
 .primary-butt {
   border: 1px solid var(--card-dark);
-  background: var(--text-light);
-  color: var(--card-dark);
+  background: var(--accent);
+  color:var(--text-light);
 }
 
 .primary-butt:hover {
-  background: var(--text-muted);
+  background: #b6500c87;
 }
 
 .secondary-butt {
   border: 1px solid var(--card-dark);
-  background: var(--text-light);
-  color:var(--card-dark);
+  background: var(--accent);
+  color:var(--text-light);
 }
 
 .secondary-butt:hover {
-  background: var(--text-muted);
+  background: #b6500c87;
 }
 
 .preview-controls {
@@ -106,9 +108,9 @@ button {
   gap: 24px;
   padding: 20px;
   margin-bottom: 20px;
-  border: 1px solid var(--panel -dark);
+  border: 1px solid var(--panel-dark);
   border-radius: 14px;
-  background: rgba(254, 243, 243, 0.353);
+  background: var(--card-dark);
 }
 
 .url-section {
@@ -120,7 +122,7 @@ button {
   margin-bottom: 8px;
   font-size: 14px;
   font-weight: 700;
-  color: var(--card-dark);
+  color: var(--text-light);
 }
 
 .url-input-group {
@@ -160,7 +162,7 @@ button {
   display: flex;
   padding: 4px;
   border-radius: 10px;
-  background: var(--text-muted);
+  background: var(--accent);
   border: 1px solid var(--panel-dark);
   margin-top: 25px;
 }
@@ -170,12 +172,12 @@ button {
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: var(--card-dark);
+  color: var(--text-light);
   font-weight: 600;
 } 
 
 .view-switch .active-mode {
-  background: var(--text-light);
+  background: #e5e2e1b6;
   color: rgba(0, 0, 0, 0.738);
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
 }
@@ -195,7 +197,7 @@ button {
   padding: 20px;
   border: 1px solid var(--panel-dark);
   border-radius: 14px;
-  background: var(--text-muted);
+  background: var(--brown);
 }
 
 .project-panel h2 {
@@ -208,11 +210,11 @@ button {
   flex-direction: column;
   gap: 10px;
   padding: 14px 0;
-  border-bottom: 1px solid var(--card-dark);
+  border-bottom: 1px solid var(--text-muted);
 }
 
 .project-detail span {
-  color: var(--panel-dark);
+  color: var(--text-muted);
   font-size: 15px;
   letter-spacing: 3px;
 }
@@ -250,7 +252,7 @@ button {
   border: 1px solid var(--panel-dark);
   border-radius: 14px;
   background: rgba(87, 85, 85, 0.3);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 30px rgba(158, 183, 242, 0.08);
 
   /* Add these */
   display: flex;
@@ -264,7 +266,7 @@ button {
   min-height: 58px;
   padding: 10px 16px;
   border-bottom: 1px solid #e2e8f0;
-  background: var(--text-muted);
+  background: var(--card-dark);
   flex-shrink: 0;
 }
 
@@ -296,8 +298,8 @@ button {
   padding: 8px 12px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  background: white;
-  color: var(--card-dark);
+  background: var(--accent);
+  color: var(--text-light);
 }
 
 .refresh-butt:disabled {
@@ -313,7 +315,7 @@ button {
   /* Fill the remaining browser-preview space */
   flex: 1;
   position: relative;
-  background: white;
+  background: var(--text-muted);
 }
 
 .iframe-container iframe {
@@ -331,13 +333,13 @@ button {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  color: var(--text-muted);
+  color: var(--brown);
   text-align: center;
 }
 
 .empty-preview h2 {
   margin: 14px 0 8px;
-  color: var(--text-muted);
+  color: var(--brown);
 }
 
 .empty-preview p {
@@ -352,8 +354,8 @@ button {
   height: 65px;
   place-items: center;
   border-radius: 50%;
-  background: var(--text-muted);
-  color: var(--card-dark);
+  background: var(--card-dark);
+  color: var(--text-light);
   font-size: 30px;
 }
 

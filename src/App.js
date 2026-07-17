@@ -6,7 +6,7 @@ import LivePreview from "./LivePreview";
 
 function App() {
   // "login" | "signup" | "preview" change it to see the view
-  const [view, setView] = useState("signup");
+  const [view, setView] = useState("login");
 
   return (
     <div className="App">
