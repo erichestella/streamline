@@ -121,6 +121,21 @@ body, html, #root {
   cursor: pointer;
 }
 
+/* Wraps <UserIcon /> inside the top navbar. UserIcon's own .user-menu-container
+   is position:absolute, so this needs position:relative to anchor the dropdown
+   to the navbar instead of the whole page. */
+.navbar-user-icon-slot {
+  position: relative;
+  height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-user-icon-slot .user-menu-container {
+  top: 0;
+  right: 0;
+}
+
 .user-avatar {
   width: 32px;
   height: 32px;

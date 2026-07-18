@@ -6,14 +6,15 @@ import {
   Settings, 
   Zap, 
   Bug, 
-  MessageSquare, 
-  User
+  MessageSquare
 } from 'lucide-react'
 import './Dashboard.css'
+import UserIcon from './UserIcon'
 
 function Dashboard() {
   const [activeSidebar, setActiveSidebar] = useState('Home')
   const [activeNav, setActiveNav] = useState('Live Preview')
+  const [isDarkMode, setIsDarkMode] = useState(true)
   
   // React State para sa To Do items para gumagana at napipindot kay Sir
   const [todos, setTodos] = useState([
@@ -66,11 +67,8 @@ function Dashboard() {
             </button>
             ))}
           </div>          
-          <div className="user-profile" onClick={() => alert("Admin profile settings coming soon!")}>
-            <span>Admin</span>
-            <div className="user-avatar">
-              <User size={18} color="#FFFFFF" />
-            </div>
+          <div className="navbar-user-icon-slot">
+            <UserIcon isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
           </div>
         </header>
 
