@@ -2,22 +2,24 @@ import React, { useState } from "react";
 import AuthPage from "./AuthPage";
 import SignupPage from "./SignupPage";
 import LivePreview from "./LivePreview";
-// import TryLivePreview from "./TryLivePreview";
+import Dashboard from "./Dashboard";
 
 function App() {
-  // "login" | "signup" | "preview" change it to see the view
   const [view, setView] = useState("login");
 
   return (
     <div className="App">
       {view === "login" && (
-        <AuthPage onSwitchToRegister={() => setView("signup")} />
+        <AuthPage
+          onSwitchToRegister={() => setView("signup")}
+          onLoginSuccess={() => setView("dashboard")}
+        />
       )}
       {view === "signup" && (
         <SignupPage onSwitchToLogin={() => setView("login")} />
       )}
       {view === "preview" && <LivePreview />}
-      {/* {view === "trylivepreview" && <TryLivePreview/>} */}
+      {view === "dashboard" && <Dashboard />}
     </div>
   );
 }

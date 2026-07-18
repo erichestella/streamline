@@ -1,0 +1,127 @@
+/* Container: Full height to fill the dashboard space */
+.debug-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  overflow: hidden;
+}
+
+/* Header: Deployment status and Annotation tool */
+.debug-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background-color: #252525;
+  border-bottom: 1px solid #333;
+}
+
+.status-indicator {
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.status-indicator.live { color: #2ecc71; }
+.status-indicator.failed { color: #e74c3c; }
+
+/* Annotation Tool Styling */
+.comment-panel {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.comment-panel input {
+  background: #121212;
+  border: 1px solid #444;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  width: 280px;
+}
+
+.comment-panel button {
+  background-color: #f97316; /* Your orange accent */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.comment-panel button:hover {
+  opacity: 0.9;
+}
+
+.split-panel {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: 100%; /* Ensure it fills the parent */
+}
+
+/* Left: Live View */
+.left-panel {
+  flex: 2;
+  border-right: 1px solid #333;
+  display: flex;
+  flex-direction: column; /* Stacks Title and Iframe */
+  background-color: #1a1a1a;
+  overflow: hidden;
+}
+
+.left-panel h3 {
+  margin: 15px;
+  color: #666;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.left-panel iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Right: Logs Panel */
+.right-panel {
+  flex: 1;
+  padding: 20px;
+  background-color: #202020;
+  overflow-y: auto;
+}
+
+.right-panel h3 {
+  margin-top: 0;
+  font-size: 1rem;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+
+.log-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #333;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #ddd;
+}
+
+.iframe-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+}
+
+.iframe-placeholder p {
+  margin: auto; /* This forces the text to center itself inside the parent */
+}

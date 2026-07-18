@@ -3,9 +3,10 @@ import './AuthPage.css';
 // Import your custom illustration graphic
 import graphicLogo from './logo.png';
 
-export default function AuthPage({ onSwitchToRegister }) {
+export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
-  const [forgotStep, setForgotStep] = useState(1); // Steps: 1 (Choose Method), 2 (Sent Status/Timer), 3 (Create New Password)
+  const [forgotStep, setForgotStep] = useState(1);
+   // Steps: 1 (Choose Method), 2 (Sent Status/Timer), 3 (Create New Password)
   
   // Login Form States
   const [idNumber, setIdNumber] = useState('');
@@ -39,6 +40,7 @@ export default function AuthPage({ onSwitchToRegister }) {
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     console.log("Logging in with:", { idNumber, githubUser, password, rememberMe });
+    onLoginSuccess();
   };
 
   const handleResetSubmit = (e) => {

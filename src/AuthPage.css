@@ -145,7 +145,7 @@
 }
 
 .primary-btn:hover {
-  background-color: var(--primary-hover);
+  background-color: var(--primary-color);
 }
 
 .footer-text {
