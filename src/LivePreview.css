@@ -4,27 +4,6 @@
     box-sizing: border-box;
 }
 
-:root {
-  --accent: #ff7517;
-  --panel-dark: #2c2727;
-  --card-dark: #3e3939;
-  --text-light: #f6f4f4;
-  --text-muted: #b8afaf;
-  --brown: #322c2c;
-  --bg: #231e1e;
-}
-
-body {
-    font-family: "Inter", sans-serif;
-    margin: 0;
-    background: radial-gradient(
-        circle at 15% 20%,
-        var(--bg),
-        transparent 40%),
-        var(--panel-dark);
-    color: var(--text-light);
-}
-
 button,
 input,
 textarea {
@@ -35,9 +14,17 @@ button {
   cursor: pointer;
 }
 
+/* This component is rendered as a tab inside Dashboard's own
+   <main className="dashboard-container">, which already provides page
+   padding, background, and its own overflow-y scroll. So this wrapper
+   only needs to lay out its own content, not claim the full viewport. */
 .live-preview-page {
-  min-height: 100vh;
-  padding: 32px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: "Inter", sans-serif;
+  color: var(--text-main);
 }
 
 .preview-header {
@@ -52,17 +39,17 @@ button {
   margin: 4px 0 8px;
   font-size: 32px;
   letter-spacing: 5px;
-  color:  var(--accent);
+  color:  var(--accent-orange);
 }
 
 .preview-header p {
   margin: 0;
-  color: var(--text-light);
+  color: var(--text-main);
   letter-spacing: 3px;
 }
 
 .preview-label {
-  color: var(--accent) !important;
+  color: var(--accent-orange) !important;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 1.5px;
@@ -82,9 +69,9 @@ button {
 }
 
 .primary-butt {
-  border: 1px solid var(--card-dark);
-  background: var(--accent);
-  color:var(--text-light);
+  border: 1px solid var(--bg-panel);
+  background: var(--accent-orange);
+  color:#ffffff;
 }
 
 .primary-butt:hover {
@@ -92,9 +79,9 @@ button {
 }
 
 .secondary-butt {
-  border: 1px solid var(--card-dark);
-  background: var(--accent);
-  color:var(--text-light);
+  border: 1px solid var(--bg-panel);
+  background: var(--accent-orange);
+  color:#ffffff;
 }
 
 .secondary-butt:hover {
@@ -108,9 +95,9 @@ button {
   gap: 24px;
   padding: 20px;
   margin-bottom: 20px;
-  border: 1px solid var(--panel-dark);
+  border: 1px solid var(--panel-border);
   border-radius: 14px;
-  background: var(--card-dark);
+  background: var(--bg-panel);
 }
 
 .url-section {
@@ -122,7 +109,7 @@ button {
   margin-bottom: 8px;
   font-size: 14px;
   font-weight: 700;
-  color: var(--text-light);
+  color: var(--text-main);
 }
 
 .url-input-group {
@@ -134,27 +121,27 @@ button {
   flex: 1;
   min-height: 50px;
   padding: 0 14px;
-  border: 1px solid var(--panel-dark);
+  border: 1px solid var(--panel-border);
   border-radius: 9px;
   outline: none;
 }
 
 .url-input-group input:focus {
-  border-color: var(--card-dark);
+  border-color: var(--bg-panel);
   box-shadow: 0 0 0 3px rgba(72, 72, 72, 0.12);
 }
 
 .url-input-group input:-webkit-autofill,
 .url-input-group input:-webkit-autofill:hover,
 .url-input-group input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px var(--text-light) inset;
-  -webkit-text-fill-color: var(--panel-dark);
+  -webkit-box-shadow: 0 0 0 1000px var(--text-main) inset;
+  -webkit-text-fill-color: var(--panel-border);
   transition: background-color 9999s ease-in-out 0s;
 }
 
 .status-message {
   margin-top: 8px !important;
-  color: var(--text-light) !important;
+  color: var(--text-main) !important;
   font-size: 13px;
 }
 
@@ -162,8 +149,8 @@ button {
   display: flex;
   padding: 4px;
   border-radius: 10px;
-  background: var(--accent);
-  border: 1px solid var(--panel-dark);
+  background: var(--accent-orange);
+  border: 1px solid var(--panel-border);
   margin-top: 25px;
 }
 
@@ -172,7 +159,7 @@ button {
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: var(--text-light);
+  color: var(--text-main);
   font-weight: 600;
 } 
 
@@ -195,9 +182,9 @@ button {
 
 .project-panel {
   padding: 20px;
-  border: 1px solid var(--panel-dark);
+  border: 1px solid var(--panel-border);
   border-radius: 14px;
-  background: var(--brown);
+  background: var(--bg-recessed);
 }
 
 .project-panel h2 {
@@ -247,9 +234,9 @@ button {
 
 .browser-preview {
   min-width: 0;
-  min-height: 700px;
+  min-height: 520px;
   overflow: hidden;
-  border: 1px solid var(--panel-dark);
+  border: 1px solid var(--panel-border);
   border-radius: 14px;
   background: rgba(87, 85, 85, 0.3);
   box-shadow: 0 10px 30px rgba(158, 183, 242, 0.08);
@@ -266,7 +253,7 @@ button {
   min-height: 58px;
   padding: 10px 16px;
   border-bottom: 1px solid #e2e8f0;
-  background: var(--card-dark);
+  background: var(--bg-panel);
   flex-shrink: 0;
 }
 
@@ -298,8 +285,8 @@ button {
   padding: 8px 12px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  background: var(--accent);
-  color: var(--text-light);
+  background: var(--accent-orange);
+  color: #ffffff;
 }
 
 .refresh-butt:disabled {
@@ -310,7 +297,7 @@ button {
 .iframe-container {
   /* Remove the old fixed height */
   height: auto;
-  min-height: 650px;
+  min-height: 470px;
 
   /* Fill the remaining browser-preview space */
   flex: 1;
@@ -333,13 +320,13 @@ button {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  color: var(--brown);
+  color: var(--bg-recessed);
   text-align: center;
 }
 
 .empty-preview h2 {
   margin: 14px 0 8px;
-  color: var(--brown);
+  color: var(--bg-recessed);
 }
 
 .empty-preview p {
@@ -354,28 +341,96 @@ button {
   height: 65px;
   place-items: center;
   border-radius: 50%;
-  background: var(--card-dark);
-  color: var(--text-light);
+  background: var(--bg-panel);
+  color: var(--text-main);
   font-size: 30px;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 900px) {
-  .live-preview-page {
-    padding: 20px;
-  }
 
+/* ==========================================================
+   DASHBOARD THEME SUPPORT
+   These colors come from Dashboard.css. When .app-layout gets
+   the light-mode class, this page automatically becomes light.
+   ========================================================== */
+
+.live-preview-page {
+  background-color: transparent;
+  color: var(--text-main);
+}
+
+.preview-controls,
+.project-panel,
+.browser-preview,
+.browser-toolbar {
+  color: var(--text-main);
+}
+
+.url-input-group input,
+.project-notes textarea {
+  background-color: var(--bg-recessed);
+  color: var(--text-main);
+  border-color: var(--panel-border);
+}
+
+.url-input-group input::placeholder,
+.project-notes textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.url-input-group input:focus,
+.project-notes textarea:focus {
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 0 3px rgba(255, 117, 23, 0.12);
+  outline: none;
+}
+
+.browser-address {
+  background-color: var(--bg-recessed);
+  color: var(--text-muted);
+  border-color: var(--panel-border);
+}
+
+.iframe-container,
+.empty-preview {
+  background-color: var(--bg-recessed);
+}
+
+.empty-preview,
+.empty-preview h2,
+.empty-preview p {
+  color: var(--text-main);
+}
+
+.empty-preview-icon {
+  background-color: var(--bg-panel);
+  color: var(--text-muted);
+  border: 1px solid var(--panel-border);
+}
+
+.browser-toolbar {
+  border-bottom-color: var(--panel-border);
+}
+
+.browser-dots span {
+  background-color: var(--text-muted);
+  opacity: 0.65;
+}
+
+/* Mobile responsiveness (thresholds account for the 75px dashboard sidebar
+   eating into available width, so they trigger a bit earlier than a
+   standalone full-width page would need) */
+@media (max-width: 960px) {
   .preview-header,
   .preview-controls {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .header-actions {
+  .header-buttons {
     width: 100%;
   }
 
-  .header-actions button {
+  .header-buttons button {
     flex: 1;
   }
 
@@ -391,25 +446,27 @@ button {
     grid-template-columns: 1fr;
   }
 
+  .browser-preview {
+    min-height: 440px;
+  }
+
   .iframe-container {
-    height: 650px;
+    height: 440px;
+    min-height: 380px;
   }
 }
 
-@media (max-width: 600px) {
-  .live-preview-page {
-    padding: 14px;
-  }
-
+@media (max-width: 640px) {
   .preview-header h1 {
-    font-size: 26px;
+    font-size: 24px;
+    letter-spacing: 3px;
   }
 
   .url-input-group {
     flex-direction: column;
   }
 
-  .header-actions {
+  .header-buttons {
     flex-direction: column;
   }
 
@@ -422,8 +479,8 @@ button {
   }
 
   .iframe-container {
-    height: 560px;
-    min-height: 400px;
+    height: 360px;
+    min-height: 300px;
   }
 }
 

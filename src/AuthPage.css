@@ -1,13 +1,12 @@
 :root {
-  /* Ang eksaktong kulay sa screenshot mo */
-  --bg-body: #413e3d;       /* Deep dark brown na may undertone ng orange/chocolate */
-  --card-bg: #332a28;       /* Bahagyang mas masiglang brown para sa mga form cards/boxes */
+  --bg-body: #413e3d;       
+  --card-bg: #332a28;      
   
-  /* Text at Accents */
-  --text-main: #F6F4F4;     /* Off-white para sa malalaking heading */
-  --text-muted: #a39896;    /* Muted grayish-orange para sa maliliit na description */
-  --primary-color: #FF7517; /* Ang iyong Streamline orange */
-  --border-color: #443836;  /* Saktong border color na tugma sa palette */
+  --text-main: #F6F4F4;     
+  --text-muted: #a39896;    
+  --primary-color: #FF7517; 
+  --primary-hover: #e0630d; 
+  --border-color: #443836;  
 }
 
 * {
@@ -21,18 +20,16 @@
   display: flex;
   min-height: 100vh;
   background-color: var(--bg-body);
-  /* Nagdagdag ng banayad na orange radial glow sa background */
   background-image: radial-gradient(circle at 10% 10%, rgba(255, 117, 23, 0.08) 0%, transparent 40%);
 }
 
-/* Left Form Section - Balanced 50/50 Split */
 .auth-form-side {
   flex: 1;
   padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-width: 620px;   /* Pinanatiling malapad para balance sa image */
+  max-width: 620px;   
   width: 100%;
   margin: 0 auto;
 }
@@ -50,7 +47,7 @@
   background: var(--card-bg);
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); /* Mas malalim na shadow para sa dark mode */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); 
 }
 
 .form-box h2 {
@@ -86,7 +83,7 @@
   border-radius: 8px;
   font-size: 0.95rem;
   outline: none;
-  background-color: #2c2727; /* Dark background para sa mga input fields */
+  background-color: #2c2727; 
   color: var(--text-main);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -96,7 +93,6 @@
   box-shadow: 0 0 0 2px rgba(255, 117, 23, 0.2);
 }
 
-/* Placeholder color custom override para sa dark mode */
 .input-group input::placeholder {
   color: #71717a;
 }
@@ -145,7 +141,7 @@
 }
 
 .primary-btn:hover {
-  background-color: var(--primary-color);
+  background-color: var(--primary-hover);
 }
 
 .footer-text {
@@ -155,10 +151,9 @@
   text-align: center;
 }
 
-/* Right Graphic Section - Balanced 50/50 Split container */
 .auth-graphic-side {
   flex: 1; 
-  background-color: #1a1616; /* Mas madilim na hugis para sa likod ng image kung mag-contain */
+  background-color: #1a1616; 
   margin: 20px;
   border-radius: 24px;
   display: flex;
@@ -166,7 +161,6 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
-  
 }
 
 .graphic-content {
@@ -182,10 +176,6 @@
     display: none;
   }
 }
-
-/* ==========================================================================
-   MULTI-STEP FORGOT PASSWORD WIZARD UTILITIES
-   ========================================================================== */
 
 .back-arrow {
   background: none;
@@ -215,7 +205,7 @@
   margin-bottom: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
-  background-color: #2c2727; /* Dark background para sa unselected cards */
+  background-color: #2c2727; 
 }
 
 .selection-card:hover {
@@ -224,19 +214,19 @@
 
 .selection-card.active {
   border-color: var(--primary-color);
-  background-color: rgba(255, 117, 23, 0.06); /* Swabeng neon orange glow background */
-}
+  background-color: rgba(255, 117, 23, 0.06); 
+} 
 
 .card-icon {
-  width: 44px;         /* Tiyak na sukat para maging perpektong square */
+  width: 44px;         
   height: 44px;
   background: var(--card-bg);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;      /* Para hindi mapitpit ang icon kapag lumiliit ang screen */
-}
+  flex-shrink: 0;      
+} 
 
 .selection-card.active .card-icon {
   background: #2c2727;
@@ -285,4 +275,119 @@
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 40px; 
+} 
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle-btn svg {
+  stroke: #888;
+  transition: stroke 0.2s;
+}
+
+.password-toggle-btn:hover svg {
+  stroke: #FF7517;
+}
+
+.strength-meter {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.strength-bar-container {
+  height: 4px;
+  width: 100%;
+  background-color: #333;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.strength-bar {
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.strength-label {
+  font-size: 11px;
+  color: #888;
+  text-align: right;
+  font-weight: 500;
+}
+
+/* ==========================================================
+   RESPONSIVE AUTH PAGE
+   ========================================================== */
+@media (min-width: 601px) and (max-width: 900px) {
+  .auth-container { min-height: 100dvh; }
+  .auth-form-side {
+    max-width: 680px;
+    padding: 32px 40px;
+  }
+  .form-box { padding: 34px; }
+}
+
+@media (max-width: 600px) {
+  .auth-container {
+    min-height: 100dvh;
+    display: block;
+    overflow-y: auto;
+  }
+  .auth-graphic-side { display: none !important; }
+  .auth-form-side {
+    min-height: 100dvh;
+    max-width: none;
+    padding: 18px 16px;
+    justify-content: center;
+  }
+  /* Phone login should show only the form card. */
+  .auth-form-side > .brand,
+  .auth-form-side > footer,
+  .auth-form-side > .streamline-footer {
+    display: none !important;
+  }
+  .form-box {
+    width: 100%;
+    margin: 0;
+    padding: 28px 20px;
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,.25);
+  }
+  .form-box h2 { font-size: clamp(1.8rem, 9vw, 2.2rem); }
+  .subtitle { margin-bottom: 24px; }
+  .form-actions {
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .selection-card { padding: 14px 12px; gap: 12px; }
+  .card-info { min-width: 0; }
+  .card-info p { overflow-wrap: anywhere; }
+}
+
+@media (max-width: 360px) {
+  .auth-form-side { padding: 12px; }
+  .form-box { padding: 24px 16px; }
 }

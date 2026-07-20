@@ -3,39 +3,71 @@ import './AuthPage.css';
 // Import your custom illustration graphic
 import graphicLogo from './logo.png';
 
-export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
+export default function AuthPage({ onSwitchToRegister, onLoginSuccess }) {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [forgotStep, setForgotStep] = useState(1);
-   // Steps: 1 (Choose Method), 2 (Sent Status/Timer), 3 (Create New Password)
-  
+  // Steps: 1 (Choose Method), 2 (Sent Status/Timer), 3 (Create New Password)
+
   // Login Form States
   const [idNumber, setIdNumber] = useState('');
   const [githubUser, setGithubUser] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // Forgot Password Wizard States - Empty initially so no input fields are displayed
   const [recoveryMethod, setRecoveryMethod] = useState(''); // '', 'email', or 'phone'
   const [timer, setTimer] = useState(59);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   // OPTION B: New Dynamic Inputs for Recovery
   const [userEmailInput, setUserEmailInput] = useState('');
   const [userPhoneInput, setUserPhoneInput] = useState('');
 
+  // Password strength helper
+  const getPasswordStrength = (pwd) => {
+    if (!pwd) return { score: 0, label: '', color: '#333', width: '0%' };
+    let score = 0;
+
+    if (pwd.length >= 8) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[0-9]/.test(pwd)) score++;
+    if (/[^A-Za-z0-9]/.test(pwd)) score++;
+
+    if (score <= 1) {
+      return { score, label: 'Weak ⚠️', color: '#ff4d4d', width: '33%' };
+    } else if (score === 2 || score === 3) {
+      return { score, label: 'Medium ⚡', color: '#ffad33', width: '66%' };
+    } else {
+      return { score, label: 'Strong 💪', color: '#4caf50', width: '100%' };
+    }
+  };
+
+  const loginStrength = getPasswordStrength(password);
+  const resetStrength = getPasswordStrength(newPassword);
+
   // Countdown effect for the activation step timer
   useEffect(() => {
     let interval = null;
-    if (isForgotPassword && forgotStep === 2 && timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
-    } else if (timer === 0) {
+    if (isForgotPassword && forgotStep === 2) {
+      if (timer > 0) {
+        interval = setInterval(() => {
+          setTimer((prev) => prev - 1);
+        }, 1000);
+      }
+    } else {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
   }, [isForgotPassword, forgotStep, timer]);
+
+  // Restrict a field to numeric-only input
+  const handleNumericInput = (value, setter) => {
+    const cleanValue = value.replace(/[^0-9]/g, '');
+    setter(cleanValue);
+  };
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
@@ -49,9 +81,13 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
       alert("Passwords do not match!");
       return;
     }
+    if (resetStrength.score < 2) {
+      alert("Password is too weak. Please include at least 8 characters, an uppercase letter, and a symbol.");
+      return;
+    }
     console.log("Updating password to:", newPassword);
     alert("Password updated successfully!");
-    
+
     // Reset all states and wizard flow
     setIsForgotPassword(false);
     setForgotStep(1);
@@ -61,6 +97,30 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
     setUserEmailInput('');
     setUserPhoneInput('');
     setRecoveryMethod('');
+  };
+
+  const handleContinueRecovery = () => {
+    if (!recoveryMethod) {
+      alert("Please select a recovery method first.");
+      return;
+    }
+    if (recoveryMethod === 'email') {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(userEmailInput)) {
+        alert("Please enter a valid email address (e.g., juandelacruz@domain.com).");
+        return;
+      }
+    }
+    if (recoveryMethod === 'phone') {
+      if (!userPhoneInput) {
+        alert("Please enter your mobile number.");
+        return;
+      }
+    }
+
+    console.log(`Sending recovery payload to: ${recoveryMethod === 'email' ? userEmailInput : userPhoneInput}`);
+    setTimer(59);
+    setForgotStep(2);
   };
 
   return (
@@ -84,52 +144,75 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
             <h2>Hi,<br />Welcome Back!</h2>
 
             <form onSubmit={handleLoginSubmit}>
+              {/* ID Number: numeric-only input */}
               <div className="input-group">
                 <label>ID Number</label>
-                <input 
-                  type="text" 
-                  placeholder="Enter your ID Number" 
+                <input
+                  type="text"
+                  placeholder="Enter your ID Number "
                   value={idNumber}
-                  onChange={(e) => setIdNumber(e.target.value)}
-                  required 
+                  onChange={(e) => handleNumericInput(e.target.value, setIdNumber)}
+                  required
                 />
               </div>
 
               <div className="input-group">
                 <label>GitHub Username</label>
-                <input 
-                  type="text" 
-                  placeholder="e.g., octocat" 
+                <input
+                  type="text"
+                  placeholder="e.g., octocat"
                   value={githubUser}
                   onChange={(e) => setGithubUser(e.target.value)}
-                  required 
+                  required
                 />
               </div>
 
               <div className="input-group">
                 <label>Password</label>
-                <input 
-                  type="password" 
-                  placeholder="••••••••••••" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required 
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showLoginPassword ? "text" : "password"}
+                    placeholder="••••••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    aria-label="Toggle password visibility"
+                  >
+                    {showLoginPassword ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                    )}
+                  </button>
+                </div>
+                {password && (
+                  <div className="strength-meter">
+                    <div className="strength-bar-container">
+                      <div className="strength-bar" style={{ width: loginStrength.width, backgroundColor: loginStrength.color }}></div>
+                    </div>
+                    <div className="strength-label">Strength: {loginStrength.label}</div>
+                  </div>
+                )}
               </div>
 
               <div className="form-actions">
                 <label className="checkbox-container">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
                   />
                   <span className="checkmark"></span>
                   Remember me
                 </label>
-                <button 
-                  type="button" 
-                  className="link-btn" 
+                <button
+                  type="button"
+                  className="link-btn"
                   onClick={() => { setIsForgotPassword(true); setForgotStep(1); }}
                 >
                   Forgot Password?
@@ -139,6 +222,7 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
               <button type="submit" className="primary-btn">Log In</button>
             </form>
 
+            {/* Register flow kept as-is (untouched per your request) */}
             <p className="footer-text">
               Don't have an account?{" "}
               <button
@@ -156,11 +240,16 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
              ========================================================= */
           <div className="form-box">
             {/* Contextual Back Navigation */}
-            <button 
-              className="back-arrow" 
+            <button
+              className="back-arrow"
               onClick={() => {
-                if (forgotStep > 1) setForgotStep(forgotStep - 1);
-                else setIsForgotPassword(false);
+                if (forgotStep === 2) {
+                  setForgotStep(1);
+                } else if (forgotStep > 1) {
+                  setForgotStep(forgotStep - 1);
+                } else {
+                  setIsForgotPassword(false);
+                }
               }}
             >
               ← Back
@@ -171,10 +260,10 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
               <div>
                 <h2>Forgot Password</h2>
                 <p className="subtitle">Select which contact details we should use to reset your password</p>
-                
+
                 {/* EMAIL CARD CONTAINER */}
                 <div style={{ marginBottom: '16px' }}>
-                  <div 
+                  <div
                     className={`selection-card ${recoveryMethod === 'email' ? 'active' : ''}`}
                     onClick={() => setRecoveryMethod('email')}
                     style={{ margin: 0 }}
@@ -191,15 +280,15 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
                     </div>
                   </div>
 
-                  {/* DYNAMIC EMAIL INPUT - Lalabas sa ilalim ng email card pagka-click */}
+                  {/* DYNAMIC EMAIL INPUT */}
                   {recoveryMethod === 'email' && (
                     <div className="input-group" style={{ marginTop: '12px', marginBottom: '8px' }}>
-                      <input 
-                        type="email" 
-                        placeholder="e.g., yourname@domain.com" 
+                      <input
+                        type="email"
+                        placeholder="e.g., yourname@domain.com"
                         value={userEmailInput}
                         onChange={(e) => setUserEmailInput(e.target.value)}
-                        required 
+                        required
                         autoFocus
                       />
                     </div>
@@ -208,7 +297,7 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
 
                 {/* PHONE CARD CONTAINER */}
                 <div style={{ marginBottom: '24px' }}>
-                  <div 
+                  <div
                     className={`selection-card ${recoveryMethod === 'phone' ? 'active' : ''}`}
                     onClick={() => setRecoveryMethod('phone')}
                     style={{ margin: 0 }}
@@ -225,40 +314,24 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
                     </div>
                   </div>
 
-                  {/* DYNAMIC PHONE INPUT - Lalabas sa ilalim ng phone card pagka-click */}
+                  {/* DYNAMIC PHONE INPUT: numeric-only */}
                   {recoveryMethod === 'phone' && (
                     <div className="input-group" style={{ marginTop: '12px', marginBottom: '8px' }}>
-                      <input 
-                        type="tel" 
-                        placeholder="e.g., +639123456789" 
+                      <input
+                        type="text"
+                        placeholder="e.g., 09123456789"
                         value={userPhoneInput}
-                        onChange={(e) => setUserPhoneInput(e.target.value)}
-                        required 
+                        onChange={(e) => handleNumericInput(e.target.value, setUserPhoneInput)}
+                        required
                         autoFocus
                       />
                     </div>
                   )}
                 </div>
 
-                <button 
-                  className="primary-btn" 
-                  onClick={() => {
-                    if (!recoveryMethod) {
-                      alert("Please select a recovery method first.");
-                      return;
-                    }
-                    if (recoveryMethod === 'email' && !userEmailInput) {
-                      alert("Please enter your email address.");
-                      return;
-                    }
-                    if (recoveryMethod === 'phone' && !userPhoneInput) {
-                      alert("Please enter your mobile number.");
-                      return;
-                    }
-                    
-                    console.log(`Sending recovery payload to: ${recoveryMethod === 'email' ? userEmailInput : userPhoneInput}`);
-                    setForgotStep(2);
-                  }}
+                <button
+                  className="primary-btn"
+                  onClick={handleContinueRecovery}
                 >
                   Continue
                 </button>
@@ -282,10 +355,28 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
                   </strong>{' '}
                   containing custom recovery steps.
                 </p>
-                <p className="timer-text">
-                  Your link will expire soon: <span className="timer-countdown">00:{timer < 10 ? `0${timer}` : timer}</span>
-                </p>
-                
+
+                {timer > 0 ? (
+                  <p className="timer-text">
+                    Your link will expire soon: <span className="timer-countdown">00:{timer < 10 ? `0${timer}` : timer}</span>
+                  </p>
+                ) : (
+                  <div className="resend-container" style={{ marginBottom: '20px' }}>
+                    <p className="timer-text" style={{ marginBottom: '8px' }}>Didn't receive the link?</p>
+                    <button
+                      type="button"
+                      className="link-btn"
+                      style={{ color: '#FF7517', fontWeight: 'bold', textDecoration: 'underline', fontSize: '14px' }}
+                      onClick={() => {
+                        setTimer(59);
+                        console.log("Resending activation link to:", recoveryMethod === 'email' ? userEmailInput : userPhoneInput);
+                      }}
+                    >
+                      Resend Activation Link
+                    </button>
+                  </div>
+                )}
+
                 <button className="primary-btn" onClick={() => setForgotStep(3)}>Open Link (Simulate Redirect)</button>
               </div>
             )}
@@ -295,27 +386,49 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
               <div>
                 <h2>Create a New Password</h2>
                 <p className="subtitle">Please enter your new structural credentials below</p>
-                
+
                 <form onSubmit={handleResetSubmit}>
                   <div className="input-group">
                     <label>New Password <span className="required">*</span></label>
-                    <input 
-                      type="password" 
-                      placeholder="••••••••••••" 
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      required 
-                    />
+                    <div className="password-input-wrapper">
+                      <input
+                        type={showNewPassword ? "text" : "password"}
+                        placeholder="••••••••••••"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="password-toggle-btn"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        aria-label="Toggle password visibility"
+                      >
+                        {showNewPassword ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                        )}
+                      </button>
+                    </div>
+                    {newPassword && (
+                      <div className="strength-meter">
+                        <div className="strength-bar-container">
+                          <div className="strength-bar" style={{ width: resetStrength.width, backgroundColor: resetStrength.color }}></div>
+                        </div>
+                        <div className="strength-label">Strength: {resetStrength.label}</div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="input-group">
                     <label>Confirm New Password <span className="required">*</span></label>
-                    <input 
-                      type="password" 
-                      placeholder="••••••••••••" 
+                    <input
+                      type="password"
+                      placeholder="••••••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      required 
+                      required
                     />
                   </div>
 
@@ -338,10 +451,10 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess  }) {
       {/* Right Column: Original Stable Layout Setup for Rocket Image */}
       <div className="auth-graphic-side">
         <div className="graphic-content">
-          <img 
-            src={graphicLogo} 
-            alt="Streamline Graphic Illustration" 
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+          <img
+            src={graphicLogo}
+            alt="Streamline Graphic Illustration"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         </div>
       </div>

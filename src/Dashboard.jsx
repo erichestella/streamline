@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { 
   Home, 
   Folder, 
@@ -10,11 +10,26 @@ import {
 } from 'lucide-react'
 import './Dashboard.css'
 import UserIcon from './UserIcon'
+import LivePreview from './LivePreview'
 
 function Dashboard() {
   const [activeSidebar, setActiveSidebar] = useState('Home')
-  const [activeNav, setActiveNav] = useState('Live Preview')
+  const [activeNav, setActiveNav] = useState('Home')
   const [isDarkMode, setIsDarkMode] = useState(true)
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+
+  // Refs for the two mobile card carousels (Quick Access + Recent Projects).
+  // The arrow buttons just nudge scrollLeft; on tablet/desktop these arrows
+  // are hidden via CSS and the containers use their normal flex layout.
+  const quickAccessRef = useRef(null)
+  const projectListRef = useRef(null)
+
+  const scrollCarousel = (ref, direction) => {
+    const node = ref.current
+    if (!node) return
+    const amount = node.clientWidth * 0.85 * direction
+    node.scrollBy({ left: amount, behavior: 'smooth' })
+  }
   
   // React State para sa To Do items para gumagana at napipindot kay Sir
   const [todos, setTodos] = useState([
@@ -29,10 +44,10 @@ function Dashboard() {
     ))
   }
   
-  const navItems = ['Live Preview', 'Debugging Mode']
+  const navItems = ['Home', 'Live Preview', 'Debugging Mode']
 
   return (
-    <div className="app-layout">
+    <div className={`app-layout ${isDarkMode ? '' : 'light-mode'}`}>
       {/* SIDEBAR */}
       <aside className="sidebar">
         <div className="sidebar-brand">
@@ -55,13 +70,26 @@ function Dashboard() {
       <div className="main-content">
         {/* TOP NAVBAR */}
         <header className="top-navbar">
-          <div className="nav-links">
+          <button
+            type="button"
+            className="hamburger-btn"
+            onClick={() => setIsMobileNavOpen((open) => !open)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={isMobileNavOpen}
+          >
+            <i className={`fa-solid ${isMobileNavOpen ? 'fa-xmark' : 'fa-bars'}`} aria-hidden="true"></i>
+          </button>
+
+          <div className={`nav-links ${isMobileNavOpen ? 'nav-links-open' : ''}`}>
             {navItems.map((item) => (
               <button
                 key={item}
                 type="button"
                 className={`nav-link ${activeNav === item ? 'active' : ''}`}
-                onClick={() => setActiveNav(item)}
+                onClick={() => {
+                  setActiveNav(item)
+                  setIsMobileNavOpen(false)
+                }}
             >
                 {item}
             </button>
@@ -75,8 +103,8 @@ function Dashboard() {
         {/* CONTAINER AREA */}
         <main className="dashboard-container"> 
           
-          {/* ================= LIVE PREVIEW TAB ================= */}
-          {activeNav === 'Live Preview' && (
+          {/* ================= HOME TAB ================= */}
+          {activeNav === 'Home' && (
             <>
               <section className="welcome-banner">
                 <h1>Welcome Back, Developer</h1>
@@ -89,33 +117,73 @@ function Dashboard() {
               <div className="dashboard-row-two">            
                 <div className="card">
                   <h2 className="card-title">Quick Access</h2>
-                  <div className="quick-access-buttons">
-                    <button className="qa-btn" onClick={() => setActiveNav('Live Preview')}>
-                      <Zap size={22} color="var(--accent-orange)" />
-                      <span>Live</span>
+                  <div className="carousel-wrapper">
+                    <button
+                      type="button"
+                      className="carousel-arrow arrow-left"
+                      onClick={() => scrollCarousel(quickAccessRef, -1)}
+                      aria-label="Scroll quick access left"
+                    >
+                      <i className="fa-solid fa-chevron-left" aria-hidden="true"></i>
                     </button>
-                    <button className="qa-btn" onClick={() => setActiveNav('Debugging Mode')}>
-                      <Bug size={22} color="var(--accent-orange)" />
-                      <span>Debug</span>
-                    </button>
-                    <button className="qa-btn" onClick={() => alert('Opening Comments Panel...')}>
-                      <MessageSquare size={22} color="var(--accent-orange)" />
-                      <span>Comment</span>
+
+                    <div className="quick-access-buttons" ref={quickAccessRef}>
+                      <button className="qa-btn" onClick={() => setActiveNav('Live Preview')}>
+                        <Zap size={22} color="var(--accent-orange)" />
+                        <span>Live</span>
+                      </button>
+                      <button className="qa-btn" onClick={() => setActiveNav('Debugging Mode')}>
+                        <Bug size={22} color="var(--accent-orange)" />
+                        <span>Debug</span>
+                      </button>
+                      <button className="qa-btn" onClick={() => alert('Opening Comments Panel...')}>
+                        <MessageSquare size={22} color="var(--accent-orange)" />
+                        <span>Comment</span>
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="carousel-arrow arrow-right"
+                      onClick={() => scrollCarousel(quickAccessRef, 1)}
+                      aria-label="Scroll quick access right"
+                    >
+                      <i className="fa-solid fa-chevron-right" aria-hidden="true"></i>
                     </button>
                   </div>
                 </div>
 
                 <div className="card">
                   <h2 className="card-title">Recent Projects</h2>
-                  <div className="project-list">
-                    <div className="project-item">
-                      <span>Salesforce-UI-Clone</span>
-                      <button className="open-btn" onClick={() => alert('Opening Salesforce-UI-Clone...')}>Open</button>
+                  <div className="carousel-wrapper">
+                    <button
+                      type="button"
+                      className="carousel-arrow arrow-left"
+                      onClick={() => scrollCarousel(projectListRef, -1)}
+                      aria-label="Scroll recent projects left"
+                    >
+                      <i className="fa-solid fa-chevron-left" aria-hidden="true"></i>
+                    </button>
+
+                    <div className="project-list" ref={projectListRef}>
+                      <div className="project-item">
+                        <span>Salesforce-UI-Clone</span>
+                        <button className="open-btn" onClick={() => alert('Opening Salesforce-UI-Clone...')}>Open</button>
+                      </div>
+                      <div className="project-item">
+                        <span>Backend-Auth-Service</span>
+                        <button className="open-btn" onClick={() => alert('Opening Backend-Auth-Service...')}>Open</button>
+                      </div>
                     </div>
-                    <div className="project-item">
-                      <span>Backend-Auth-Service</span>
-                      <button className="open-btn" onClick={() => alert('Opening Backend-Auth-Service...')}>Open</button>
-                    </div>
+
+                    <button
+                      type="button"
+                      className="carousel-arrow arrow-right"
+                      onClick={() => scrollCarousel(projectListRef, 1)}
+                      aria-label="Scroll recent projects right"
+                    >
+                      <i className="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -155,6 +223,9 @@ function Dashboard() {
               </div>
             </>
           )}
+
+          {/* ================= LIVE PREVIEW TAB ================= */}
+          {activeNav === 'Live Preview' && <LivePreview />}
 
           {/* ================= DEBUGGING MODE TAB ================= */}
           {activeNav === 'Debugging Mode' && (

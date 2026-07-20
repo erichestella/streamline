@@ -1,7 +1,14 @@
+/* Font Awesome is loaded ONCE here, at the top-level app shell, so every
+   child component (UserIcon, LivePreview, etc.) can use fa- icon classes
+   without each one adding its own @import and re-fetching the stylesheet. */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css");
+
 :root {
   --text-main: #F6F4F4;
+  --text-muted: #A09696;
   --bg-page: #231E1E;
   --bg-panel: #322C2C;
+  --bg-recessed: #231E1E;
   --accent-orange: #FF7517;
   --panel-border: rgba(246, 244, 244, 0.08);
   --hover-effect: rgba(255, 117, 23, 0.12);
@@ -27,6 +34,26 @@ body, html, #root {
   display: flex;
   height: 100vh;
   width: 100%;
+  /* Re-declare color here (not just inherit it from body/html/#root).
+     Those ancestors sit ABOVE where .light-mode gets toggled, so their
+     computed color was already locked in before the override could ever
+     reach it. Declaring it again on .app-layout makes it recompute using
+     whichever --text-main value is active for this element. */
+  color: var(--text-main);
+}
+
+/* Toggled by the UserIcon theme switch (isDarkMode in Dashboard.jsx).
+   Overriding the variables here means every component that already reads
+   var(--bg-page), var(--bg-panel), var(--text-main), etc. re-themes for
+   free, no per-component light/dark styles needed. */
+.app-layout.light-mode {
+  --text-main: #000000;
+  --text-muted: #4A4444;
+  --bg-page: #FFFFFF;
+  --bg-panel: #FFFFFF;
+  --bg-recessed: #F5F5F5;
+  --panel-border: rgba(35, 30, 30, 0.1);
+  --hover-effect: rgba(255, 117, 23, 0.12);
 }
 
 .sidebar {
@@ -49,7 +76,7 @@ body, html, #root {
 .sidebar-icon-btn {
   background: none;
   border: none;
-  color: #A09696;
+  color: var(--text-muted);
   cursor: pointer;
   width: 48px;
   height: 48px;
@@ -82,11 +109,39 @@ body, html, #root {
   padding: 0 25px;
   flex-shrink: 0;
   user-select: none;
+  /* Give the navbar (and the UserIcon dropdown living inside it) its own
+     stacking context above the rest of the page. Without this, the
+     Debugging Mode iframe (and its split-panel wrapper) could render on
+     top of the account dropdown since browsers always stack iframes/plugin
+     content above regular non-positioned siblings, regardless of DOM order. */
+  position: relative;
+  z-index: 30;
 }
 
 .nav-links {
   display: flex;
   gap: 8px;
+}
+
+/* Hamburger toggle: hidden on tablet/desktop, only shown on mobile (see
+   the max-width: 700px block near the bottom of this file). */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-main);
+  font-size: 1.2rem;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.hamburger-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--accent-orange);
 }
 
 /* Sinuportahan pareho ang <a> at <button> para sigurado kung ano man ang gamitin sa React */
@@ -153,6 +208,7 @@ body, html, #root {
   gap: 20px;
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .welcome-banner {
@@ -170,14 +226,14 @@ body, html, #root {
 }
 
 .welcome-banner p {
-  color: #B4AFAF;
+  color: var(--text-muted);
   font-size: 0.95rem;
   margin-bottom: 12px;
 }
 
 .active-area-badge {
   font-size: 0.8rem;
-  color: #A09696;
+  color: var(--text-muted);
 }
 
 .highlight-text {
@@ -200,6 +256,13 @@ body, html, #root {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  /* Grid items default to min-width:auto, which lets them grow to fit
+     their content (like the wide carousel row below) instead of
+     shrinking to fit the column. That was pushing the whole page wider
+     than the screen. This forces the card to respect its column width,
+     so any overflow stays contained inside .quick-access-buttons /
+     .project-list's own overflow-x:auto scroll instead of leaking out. */
+  min-width: 0;
 }
 
 .card-title {
@@ -213,11 +276,27 @@ body, html, #root {
   display: flex;
   gap: 15px;
   flex: 1;
+  min-width: 0;
+}
+
+/* Carousel wrapper shared by Quick Access and Recent Projects on mobile.
+   On tablet/desktop these arrows stay hidden (display:none) and the
+   original flex layouts above/below are used as-is. */
+.carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.carousel-arrow {
+  display: none;
 }
 
 .qa-btn {
   flex: 1;
-  background-color: #231E1E;
+  background-color: var(--bg-recessed);
   border: 1px solid transparent;
   border-radius: 6px;
   cursor: pointer;
@@ -242,6 +321,7 @@ body, html, #root {
   gap: 10px;
   flex: 1;
   justify-content: center;
+  min-width: 0;
 }
 
 .project-item {
@@ -249,7 +329,7 @@ body, html, #root {
   justify-content: space-between;
   align-items: center;
   padding: 12px 15px;
-  background-color: #231E1E;
+  background-color: var(--bg-recessed);
   border-radius: 6px;
   font-size: 0.95rem;
 }
@@ -279,7 +359,7 @@ body, html, #root {
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background-color: #231E1E;
+  background-color: var(--bg-recessed);
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -305,7 +385,7 @@ body, html, #root {
 
 .todo-item label.completed {
   text-decoration: line-through;
-  color: #6E6666;
+  color: var(--text-muted);
 }
 
 .card-header-split {
@@ -317,7 +397,7 @@ body, html, #root {
 
 .card-subtitle {
   font-size: 0.8rem;
-  color: #8C8282;
+  color: var(--text-muted);
 }
 
 .chart-container {
@@ -325,7 +405,7 @@ body, html, #root {
   align-items: flex-end;
   justify-content: space-between;
   height: 120px;
-  background-color: #231E1E;
+  background-color: var(--bg-recessed);
   padding: 15px 25px;
   border-radius: 6px;
 }
@@ -348,7 +428,7 @@ body, html, #root {
 .chart-label {
   font-size: 0.75rem;
   margin-top: 6px;
-  color: #8C8282;
+  color: var(--text-muted);
 }
 
 /* ==========================================
@@ -397,7 +477,7 @@ body, html, #root {
 }
 
 .comment-panel input {
-  background-color: #231E1E;
+  background-color: var(--bg-recessed);
   border: 1px solid var(--panel-border);
   color: var(--text-main);
   padding: 8px 12px;
@@ -455,7 +535,7 @@ body, html, #root {
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #A09696;
+  color: var(--text-muted);
 }
 
 .panel-header {
@@ -505,7 +585,7 @@ body, html, #root {
 }
 
 .no-logs {
-  color: #8C8282;
+  color: var(--text-muted);
   font-size: 0.9rem;
   text-align: center;
   margin-top: 20px;
@@ -518,5 +598,191 @@ body, html, #root {
   .split-panel {
     grid-template-columns: 1fr;
     height: auto;
+  }
+  /* Without an explicit height here, .left-panel/.right-panel would
+     collapse to their (empty) content height, and the iframe (which is
+     width/height: 100% of its parent) would render at 0px tall. */
+  .left-panel {
+    min-height: 360px;
+  }
+  .right-panel {
+    min-height: 260px;
+  }
+  .debug-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .comment-panel {
+    flex-direction: column;
+  }
+  .comment-panel input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .top-navbar {
+    padding: 0 14px;
+    gap: 10px;
+  }
+
+  /* Show the hamburger, hide the inline tab row, and turn .nav-links
+     into a sliding drawer that drops down from the navbar instead. */
+  .hamburger-btn {
+    display: flex;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background-color: var(--bg-panel);
+    border-bottom: 1px solid var(--panel-border);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition: max-height 0.25s ease, opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .nav-links.nav-links-open {
+    max-height: 260px;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .nav-link,
+  .nav-button-tab {
+    width: 100%;
+    border-radius: 0;
+    padding: 14px 20px;
+    font-size: 0.9rem;
+    text-align: left;
+  }
+
+  .dashboard-container {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  /* Quick Access + Recent Projects become swipeable card carousels, with
+     visible prev/next arrows (tablet/desktop keep the default flex/grid
+     layout and never show these arrows - see .carousel-arrow default above). */
+  .quick-access-buttons,
+  .project-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    justify-content: flex-start;
+  }
+
+  .quick-access-buttons::-webkit-scrollbar,
+  .project-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .qa-btn,
+  .project-item {
+    flex: 0 0 82%;
+    scroll-snap-align: center;
+  }
+
+  /* Keep the card's own content from overflowing/breaking layout at
+     narrow widths: long project names truncate instead of pushing the
+     Open button off the card, and text/icon sizes scale down smoothly
+     with the viewport instead of staying fixed. */
+  .qa-btn {
+    padding: clamp(14px, 4vw, 20px) 10px;
+    gap: clamp(6px, 2vw, 10px);
+  }
+
+  .qa-btn span {
+    font-size: clamp(0.8rem, 3vw, 0.95rem);
+  }
+
+  .qa-btn svg {
+    width: clamp(18px, 5vw, 22px);
+    height: clamp(18px, 5vw, 22px);
+  }
+
+  .project-item {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .project-item span {
+    flex: 1;
+    min-width: 0;
+    font-size: clamp(0.82rem, 3vw, 0.95rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .open-btn {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .carousel-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--panel-border);
+    background-color: var(--bg-panel);
+    color: var(--accent-orange);
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  }
+
+  .carousel-arrow.arrow-left {
+    left: -6px;
+  }
+
+  .carousel-arrow.arrow-right {
+    right: -6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 58px;
+    gap: 12px;
+    padding: 14px 0;
+  }
+  .sidebar-icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+  .welcome-banner {
+    padding: 18px;
+  }
+  .welcome-banner h1 {
+    font-size: 1.3rem;
+  }
+  .card {
+    padding: 16px;
+  }
+  .chart-container {
+    padding: 12px 14px;
   }
 }

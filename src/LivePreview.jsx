@@ -81,7 +81,7 @@ function LivePreview() {
     };
 
     return (
-        <main className="live-preview-page">
+        <section className="live-preview-page" aria-label="Live Preview">
             <header className="preview-header">
                 <div>
                     <p className="preview-label">STREAMLINE</p>
@@ -118,13 +118,9 @@ function LivePreview() {
                                     setInput_Url(newUrl);
                                     set_Message("");
 
-                                    if (newUrl.trim() && message === "Enter valid preview link") {
+                                    if (newUrl.trim() === "") {
+                                        setPreview_Url("");
                                         set_Message("");
-                                    }
-
-                                    if (newUrl.trim() === ""){
-                                      setPreview_Url("");
-                                      set_Message("");
                                     }
                                 }}
                                 onKeyDown={(event) => {
@@ -246,7 +242,7 @@ function LivePreview() {
                         ) : (
                             <div className="empty-preview">
                                 <div className="empty-preview-icon" aria-hidden="true">
-                                    <i class="fa-solid fa-eye-slash"></i>
+                                    <i className="fa-solid fa-eye-slash"></i>
                                 </div>
                                 <h2>No Live Preview Displayed</h2>
                                 <p>
@@ -257,7 +253,7 @@ function LivePreview() {
                     </div>
                 </div>
             </section>
-        </main>
+        </section>
     );
 }
 

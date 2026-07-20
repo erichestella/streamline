@@ -125,3 +125,27 @@
 .iframe-placeholder p {
   margin: auto; /* This forces the text to center itself inside the parent */
 }
+
+
+/* ==========================================================
+   RESPONSIVE DEBUGGING MODE
+   ========================================================== */
+@media (max-width: 900px) {
+  .debug-container { height: auto; min-height: 100%; overflow: visible; }
+  .debug-header { align-items: stretch; gap: 12px; }
+  .comment-panel { flex: 1; }
+  .comment-panel input { width: min(42vw, 280px); }
+  .split-panel { min-height: 620px; }
+}
+
+@media (max-width: 640px) {
+  .debug-header { flex-direction: column; padding: 14px; }
+  .comment-panel { flex-direction: column; align-items: stretch; }
+  .comment-panel input,
+  .comment-panel button { width: 100%; }
+  .split-panel { flex-direction: column; min-height: 0; height: auto; overflow: visible; }
+  .left-panel { flex: none; min-height: 320px; border-right: 0; border-bottom: 1px solid #333; }
+  .left-panel iframe,
+  .iframe-placeholder { min-height: 320px; }
+  .right-panel { flex: none; min-height: 260px; max-height: 360px; padding: 16px; }
+}

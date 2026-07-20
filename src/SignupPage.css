@@ -6,18 +6,38 @@
   --text-muted: #b8afaf;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
 .page {
+  /* Lock the page to the viewport height and let it own its own scrollbar.
+     This way the WHOLE page (left panel + right form) scrolls together,
+     instead of relying on an ancestor (#root/body) that may be
+     height:100vh + overflow:hidden, which was trapping only the form. */
+  height: 100vh;
   min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   display: flex;
+  align-items: flex-start;
   background: var(--panel-dark);
   color: var(--text-light);
   font-family: "Inter", sans-serif;
-  
 }
 
 /*  Left informational panel  */
 .panel-left {
-  flex: 1.1;  
+  flex: 1.1;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   background: radial-gradient(
@@ -96,12 +116,12 @@
 /*  Right form panel  */
 .panel-right {
   flex: 1;
+  min-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: clamp(32px, 6vw, 56px) clamp(24px, 8vw, 100px)
     clamp(32px, 6vw, 56px) clamp(8px, 2vw, 10px); /*top, right, bottom, left*/
-
 }
 
 .form-card {
@@ -439,6 +459,17 @@ input:-webkit-autofill:focus {
 @media (max-width: 900px) {
   .page {
     flex-direction: column;
+    height: 100dvh;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-items: stretch;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+  .panel-left,
+  .panel-right {
+    min-height: 0;
   }
   .panel-left {
     padding: 40px 28px;
@@ -451,5 +482,101 @@ input:-webkit-autofill:focus {
 @media (max-width: 480px) {
   .field-row {
     flex-direction: column;
+  }
+  .panel-left {
+    padding: 32px 20px;
+  }
+  .panel-right {
+    padding: 20px 16px;
+  }
+  .headline {
+    font-size: 26px;
+    margin-top: 32px;
+  }
+  .feature-list {
+    margin-top: 32px;
+    gap: 20px;
+  }
+  .form-card {
+    padding: 24px 20px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .form-card {
+    padding: 20px 16px;
+  }
+  .register-with-row {
+    flex-direction: column;
+  }
+}
+
+
+/* =========================================================
+   MOBILE FOOTER LINKS (Phone View)
+   ========================================================= */
+@media (max-width: 768px) {
+
+  /* Hide only the headline and feature list to save space on mobile.
+     Using explicit selectors (instead of a blanket ":not()" rule) means
+     the footer's popup modal - which also renders as a sibling inside
+     .panel-left when open - is never accidentally caught and hidden. */
+  .panel-left > .headline,
+  .panel-left > .feature-list {
+    display: none;
+  }
+
+  .page {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* .panel-left itself stops generating a box and its children (brand,
+     footer, modal popup) become direct flex items of .page. This lets us
+     explicitly order brand -> form -> footer below, instead of the
+     footer being stuck wherever it sits in the markup inside panel-left
+     (which is what put it up near the top, right after the brand). */
+  .panel-left {
+    display: contents;
+  }
+
+  .brand {
+    order: 1;
+    justify-content: center;
+    padding: 24px 20px 4px;
+  }
+
+  .panel-right {
+    order: 2;
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  /* Sits after the form now, in normal document flow - not a floating
+     bar - since FooterLinks.css's own unconditional ".streamline-footer
+     { position: static }" rule always wins that particular property
+     against this file (it's injected later), so we don't fight it here. */
+  .streamline-footer {
+    order: 3;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 8px;
+    padding: 20px 16px calc(28px + env(safe-area-inset-bottom));
+    flex: 0 0 auto;
+    visibility: visible;
+    overflow: visible;
+  }
+
+  .footer-nav {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    width: 100%;
   }
 }
