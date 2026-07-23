@@ -11,6 +11,31 @@ const initialSignupForm = {
   confirmPassword: "",
 };
 
+// Validates a single field, given the full (already-updated) form values
+// so cross-field checks like confirmPassword can see the latest password.
+function validateField(name, value, currentForm) {
+  switch (name) {
+    case "name":
+      return value.trim() ? "" : "Name is required.";
+    case "idNumber":
+      return value.trim() ? "" : "ID number is required.";
+    case "githubUsername":
+      return value.trim() ? "" : "Github username is required.";
+    case "email":
+      return /^\S+@\S+\.\S+$/.test(value) ? "" : "Enter a valid email.";
+    case "password":
+      return value.length >= 8
+        ? ""
+        : "Password must be at least 8 characters.";
+    case "confirmPassword":
+      return value === currentForm.password
+        ? ""
+        : "Passwords do not match.";
+    default:
+      return "";
+  }
+}
+
 function TermsModal({ onClose, onAccept }) {
   return (
     <div className="modal-overlay" role="dialog" aria-modal="true">
@@ -65,6 +90,28 @@ function TermsModal({ onClose, onAccept }) {
   );
 }
 
+function SuccessModal({ onContinue }) {
+  return (
+    <div className="modal-overlay" role="dialog" aria-modal="true">
+      <div className="modal success-modal">
+        <div className="modal-body success-body">
+          <i class="fa-regular fa-circle-check success-icon"></i>
+          <h2>Signed Up Succesfully!</h2>
+          <p>
+            Your Streamline account has been created successfully. Click OK
+            to log in.
+          </p>
+        </div>
+        <div className="modal-footer success-footer">
+          <button className="btn-primary" onClick={onContinue}>
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SignupPage({ onSwitchToLogin }) {
   //  Sign up form state
   const [form, setForm] = useState(initialSignupForm);
@@ -73,11 +120,49 @@ export default function SignupPage({ onSwitchToLogin }) {
   const [authorized, setAuthorized] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const updatedForm = { ...form, [name]: value };
+    setForm(updatedForm);
+
+    // Live-validate this field as the user types, so the error clears
+    // the moment the value becomes valid instead of waiting for submit.
+    setErrors((prev) => {
+      const next = { ...prev, [name]: validateField(name, value, updatedForm) };
+      // Password and confirmPassword depend on each other, so if password
+      // changes and confirmPassword already has a value, re-check it too.
+      if (name === "password" && updatedForm.confirmPassword) {
+        next.confirmPassword = validateField(
+          "confirmPassword",
+          updatedForm.confirmPassword,
+          updatedForm
+        );
+      }
+      return next;
+    });
+  };
+
+  const handleAuthorizedChange = (e) => {
+    const checked = e.target.checked;
+    setAuthorized(checked);
+    setErrors((prev) => ({
+      ...prev,
+      authorized: checked
+        ? ""
+        : "You must authorize Streamline to access your account.",
+    }));
+  };
+
+  const handleAgreedChange = (e) => {
+    const checked = e.target.checked;
+    setAgreed(checked);
+    setErrors((prev) => ({
+      ...prev,
+      agreed: checked ? "" : "You must accept the Terms & Conditions.",
+    }));
   };
 
   const validate = () => {
@@ -102,9 +187,7 @@ export default function SignupPage({ onSwitchToLogin }) {
     e.preventDefault();
     if (validate()) {
       console.log("Sign up form submitted:", form);
-      setForm(initialSignupForm);
-      setAuthorized(false);
-      setAgreed(false);
+      setShowSuccess(true);
     }
   };
 
@@ -173,7 +256,10 @@ export default function SignupPage({ onSwitchToLogin }) {
                   onChange={handleChange}
                 />
                 {errors.name && (
-                  <span className="field-error">{errors.name}</span>
+                  <span className="field-error">
+                    <i className="fa-solid fa-circle-exclamation" />{" "}
+                    {errors.name}
+                  </span>
                 )}
               </div>
 
@@ -198,7 +284,10 @@ export default function SignupPage({ onSwitchToLogin }) {
                   }}
                 />
                 {errors.idNumber && (
-                  <span className="field-error">{errors.idNumber}</span>
+                  <span className="field-error">
+                    <i className="fa-solid fa-circle-exclamation" />{" "}
+                    {errors.idNumber}
+                  </span>
                 )}
               </div>
 
@@ -214,6 +303,7 @@ export default function SignupPage({ onSwitchToLogin }) {
                 />
                 {errors.githubUsername && (
                   <span className="field-error">
+                    <i className="fa-solid fa-circle-exclamation" />{" "}
                     {errors.githubUsername}
                   </span>
                 )}
@@ -230,7 +320,10 @@ export default function SignupPage({ onSwitchToLogin }) {
                   onChange={handleChange}
                 />
                 {errors.email && (
-                  <span className="field-error">{errors.email}</span>
+                  <span className="field-error">
+                    <i className="fa-solid fa-circle-exclamation" />{" "}
+                    {errors.email}
+                  </span>
                 )}
               </div>
 
@@ -255,14 +348,17 @@ export default function SignupPage({ onSwitchToLogin }) {
                   >
                     <i
                       className={`fa-solid ${
-                        showPassword ? "fa-eye-slash" : "fa-eye"
+                        showPassword ? "fa-eye" : "fa-eye-slash"
                       }`}
                     />
                   </button>
                 </div>
                 <span className="hint">Minimum length is 8 characters</span>
                 {errors.password && (
-                  <span className="field-error">{errors.password}</span>
+                  <span className="field-error">
+                    <i className="fa-solid fa-circle-exclamation" />{" "}
+                    {errors.password}
+                  </span>
                 )}
               </div>
 
@@ -289,13 +385,14 @@ export default function SignupPage({ onSwitchToLogin }) {
                   >
                     <i
                       className={`fa-solid ${
-                        showConfirmPassword ? "fa-eye-slash" : "fa-eye"
+                        showConfirmPassword ? "fa-eye" : "fa-eye-slash"
                       }`}
                     />
                   </button>
                 </div>
                 {errors.confirmPassword && (
                   <span className="field-error">
+                    <i className="fa-solid fa-circle-exclamation" />{" "}
                     {errors.confirmPassword}
                   </span>
                 )}
@@ -306,14 +403,17 @@ export default function SignupPage({ onSwitchToLogin }) {
                   id="authorized"
                   type="checkbox"
                   checked={authorized}
-                  onChange={(e) => setAuthorized(e.target.checked)}
+                  onChange={handleAuthorizedChange}
                 />
                 <label htmlFor="authorized">
                   Authorize Streamline to Access
                 </label>
               </div>
               {errors.authorized && (
-                <span className="field-error">{errors.authorized}</span>
+                <span className="field-error">
+                  <i className="fa-solid fa-circle-exclamation" />{" "}
+                  {errors.authorized}
+                </span>
               )}
 
               <div className="agree-row">
@@ -321,7 +421,7 @@ export default function SignupPage({ onSwitchToLogin }) {
                   id="agreed"
                   type="checkbox"
                   checked={agreed}
-                  onChange={(e) => setAgreed(e.target.checked)}
+                  onChange={handleAgreedChange}
                 />
                 <label htmlFor="agreed">
                   I agree to the{" "}
@@ -335,7 +435,10 @@ export default function SignupPage({ onSwitchToLogin }) {
                 </label>
               </div>
               {errors.agreed && (
-                <span className="field-error">{errors.agreed}</span>
+                <span className="field-error">
+                  <i className="fa-solid fa-circle-exclamation" />{" "}
+                  {errors.agreed}
+                </span>
               )}
 
               <button type="submit" className="btn-primary btn-full">
@@ -357,7 +460,21 @@ export default function SignupPage({ onSwitchToLogin }) {
           onClose={() => setShowTerms(false)}
           onAccept={() => {
             setAgreed(true);
+            setErrors((prev) => ({ ...prev, agreed: "" }));
             setShowTerms(false);
+          }}
+        />
+      )}
+
+      {showSuccess && (
+        <SuccessModal
+          onContinue={() => {
+            setShowSuccess(false);
+            setForm(initialSignupForm);
+            setAuthorized(false);
+            setAgreed(false);
+            setErrors({});
+            onSwitchToLogin();
           }}
         />
       )}

@@ -24,6 +24,7 @@ body {
      height:100vh + overflow:hidden, which was trapping only the form. */
   height: 100vh;
   min-height: 100vh;
+  flex-wrap: wrap;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -36,8 +37,8 @@ body {
 
 /*  Left informational panel  */
 .panel-left {
-  flex: 1.1;
-  min-height: 100%;
+  flex: 1.1 320px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   background: radial-gradient(
@@ -115,10 +116,10 @@ body {
 
 /*  Right form panel  */
 .panel-right {
-  flex: 1;
-  min-height: 100%;
+  flex: 1 1 380px;
+  min-height: 0%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: clamp(32px, 6vw, 56px) clamp(24px, 8vw, 100px)
     clamp(32px, 6vw, 56px) clamp(8px, 2vw, 10px); /*top, right, bottom, left*/
@@ -287,8 +288,15 @@ input:-webkit-autofill:focus {
 }
 
 .field-error {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 11px;
   color: #ff9a6b;
+}
+
+.field-error i {
+  font-size: 11px;
 }
 
 .agree-row {
@@ -383,6 +391,53 @@ input:-webkit-autofill:focus {
   line-height: 1.5;
 }
 
+/*  Success popup (shown after a completed sign up)  */
+.success-modal {
+  max-width: 380px;
+  min-height: 340px;      /* gives the popup some height to work with */
+  display: flex;
+  flex-direction: column;
+}
+
+.success-body {
+  text-align: center;
+  padding: 36px 28px 8px;
+  flex: 1;                 /* body fills available space, pushing footer down */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* keeps icon/text centered in that space */
+}
+
+.success-footer {
+  justify-content: center;
+  margin-top: auto;        /* pushes footer (line + button) to the bottom */
+} 
+
+.success-icon {
+  font-size: 60px;
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: block;
+}
+
+.success-body h2 {
+  margin-bottom: 10px;
+  font-size: 30px;
+  line-height: 2;
+  margin-top: 10px;
+}
+
+.success-body p {
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+
+.success-footer .btn-primary {
+  min-width: 120px;
+}
+
 /*  Terms Sections  */
 .modal-overlay {
   position: fixed;
@@ -459,6 +514,7 @@ input:-webkit-autofill:focus {
 @media (max-width: 900px) {
   .page {
     flex-direction: column;
+    flex-wrap: nowrap;
     height: 100dvh;
     min-height: 100vh;
     overflow-y: auto;
@@ -516,7 +572,7 @@ input:-webkit-autofill:focus {
 /* =========================================================
    MOBILE FOOTER LINKS (Phone View)
    ========================================================= */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
 
   /* Hide only the headline and feature list to save space on mobile.
      Using explicit selectors (instead of a blanket ":not()" rule) means
@@ -530,6 +586,7 @@ input:-webkit-autofill:focus {
   .page {
     display: flex;
     flex-direction: column;
+    flex-wrap: nowrap;
     height: 100dvh;
     min-height: 100vh;
     overflow-y: auto;

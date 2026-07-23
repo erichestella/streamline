@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./LivePreview.css";
 
 function LivePreview() {
@@ -6,6 +6,28 @@ function LivePreview() {
     const [previewUrl, setPreview_Url] = useState("");
     const [view_Mode, setView_Mode] = useState("preview");
     const [message, set_Message] = useState("");
+
+    const containerRef = useRef(null);
+    const [scale, setScale] = useState(1);
+
+    const DESKTOP_WIDTH = 1440;
+    const DESKTOP_HEIGHT = 900;
+
+    useEffect(() => {
+        const updateScale = () => {
+            if (containerRef.current) {
+                const containerWidth = containerRef.current.offsetWidth;
+                setScale(containerWidth / DESKTOP_WIDTH);
+            }
+        };
+
+        updateScale();
+
+        const observer = new ResizeObserver(updateScale);
+        if (containerRef.current) observer.observe(containerRef.current);
+
+        return () => observer.disconnect();
+    }, []);
 
     const format_Url = (url) => {
         const trimmed_Url = url.trim();
@@ -86,7 +108,7 @@ function LivePreview() {
                 <div>
                     <p className="preview-label">STREAMLINE</p>
                     <h1>LIVE PREVIEW</h1>
-                    <p>View and test your project more easily.</p>
+                    <p className="preview-description">View and test your project more easily.</p>
                 </div>
 
                 <div className="header-buttons">
@@ -231,14 +253,22 @@ function LivePreview() {
                         </button>
                     </div>
 
-                    <div className="iframe-container">
+                    <div className="iframe-container" ref={containerRef}>
                         {previewUrl ? (
-                            <iframe
-                                key={previewUrl}
-                                src={previewUrl}
-                                title="Project Live Preview"
-                                allow="clipboard-read; clipboard-write"
-                            ></iframe>
+                            <div className="iframe-scale-wrapper" style={{ height: DESKTOP_HEIGHT * scale }}>
+                                <iframe
+                                    key={previewUrl}
+                                    src={previewUrl}
+                                    title="Project Live Preview"
+                                    allow="clipboard-read; clipboard-write"
+                                    style={{
+                                        width: DESKTOP_WIDTH,
+                                        height: DESKTOP_HEIGHT,
+                                        transform: `scale(${scale})`,
+                                        transformOrigin: "top left",
+                                    }}
+                                ></iframe>
+                            </div>
                         ) : (
                             <div className="empty-preview">
                                 <div className="empty-preview-icon" aria-hidden="true">

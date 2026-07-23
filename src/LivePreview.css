@@ -74,18 +74,18 @@ button {
   color:#ffffff;
 }
 
-.primary-butt:hover {
-  background: #b6500c87;
+
+.primary-butt:hover,
+.secondary-butt:hover {
+  background: #b19191c3; /* lighter orange */
+  border-color: #ffa45b;
+  color: #ffffff;
 }
 
 .secondary-butt {
   border: 1px solid var(--bg-panel);
   background: var(--accent-orange);
   color:#ffffff;
-}
-
-.secondary-butt:hover {
-  background: #b6500c87;
 }
 
 .preview-controls {
@@ -134,8 +134,8 @@ button {
 .url-input-group input:-webkit-autofill,
 .url-input-group input:-webkit-autofill:hover,
 .url-input-group input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px var(--text-main) inset;
-  -webkit-text-fill-color: var(--panel-border);
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-recessed) inset;
+  -webkit-text-fill-color: var(--text-main);
   transition: background-color 9999s ease-in-out 0s;
 }
 
@@ -305,12 +305,17 @@ button {
   background: var(--text-muted);
 }
 
+.iframe-scale-wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
 .iframe-container iframe {
   display: block;
-  width: 100%;
-  height: 100%;
   border: 0;
   background: white;
+  /* remove width: 100%; height: 100%; — now set inline via JS */
 }
 
 .empty-preview {
@@ -352,6 +357,10 @@ button {
    These colors come from Dashboard.css. When .app-layout gets
    the light-mode class, this page automatically becomes light.
    ========================================================== */
+
+.app-layout.light-mode .preview-description {
+  color: #ffffff;
+}
 
 .live-preview-page {
   background-color: transparent;
