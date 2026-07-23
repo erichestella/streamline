@@ -210,6 +210,18 @@ button {
   color: #15803d;
 }
 
+.status-notready {
+  color: #b91c1c;
+}
+
+.status-checking {
+  color: #b45309;
+}
+
+.status-idle {
+  color: var(--text-muted);
+}
+
 .project-notes {
   margin-top: 22px;
 }

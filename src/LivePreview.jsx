@@ -6,6 +6,7 @@ function LivePreview() {
     const [previewUrl, setPreview_Url] = useState("");
     const [view_Mode, setView_Mode] = useState("preview");
     const [message, set_Message] = useState("");
+    const [linkStatus, setLinkStatus] = useState("idle"); // "idle" | "checking" | "ready" | "notready"
 
     const containerRef = useRef(null);
     const [scale, setScale] = useState(1);
@@ -46,6 +47,29 @@ function LivePreview() {
         return trimmed_Url;
     };
 
+    const checkLinkStatus = async (url) => {
+        setLinkStatus("checking");
+
+        const controller = new AbortController();
+        // If the host doesn't respond within 8s, treat it as not ready
+        // instead of leaving the status stuck on "Checking..." forever.
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        try {
+            // "no-cors" is required since most preview targets (Vercel, Netlify, etc.)
+            // won't send CORS headers back to us. That means we can't read the actual
+            // status code, but a resolved (even opaque) response tells us the host
+            // responded, while a thrown error means it's unreachable — no response,
+            // DNS failure, connection refused, timed out, blocked, etc.
+            await fetch(url, { mode: "no-cors", cache: "no-store", signal: controller.signal });
+            setLinkStatus("ready");
+        } catch (error) {
+            setLinkStatus("notready");
+        } finally {
+            clearTimeout(timeoutId);
+        }
+    };
+
     const loadPreview = () => {
         const formatted_Url = format_Url(inputUrl);
 
@@ -56,12 +80,14 @@ function LivePreview() {
 
         setPreview_Url(formatted_Url);
         set_Message("");
+        checkLinkStatus(formatted_Url);
     };
 
     const clearInput = () => {
         setInput_Url("");
         setPreview_Url("");
         set_Message("");
+        setLinkStatus("idle");
     };
 
     const copylink = async () => {
@@ -143,6 +169,7 @@ function LivePreview() {
                                     if (newUrl.trim() === "") {
                                         setPreview_Url("");
                                         set_Message("");
+                                        setLinkStatus("idle");
                                     }
                                 }}
                                 onKeyDown={(event) => {
@@ -209,7 +236,22 @@ function LivePreview() {
 
                         <div className="project-detail">
                             <span>Status</span>
-                            <strong className="status-ready">Ready</strong>
+                            <strong
+                                className={
+                                    linkStatus === "ready"
+                                        ? "status-ready"
+                                        : linkStatus === "notready"
+                                        ? "status-notready"
+                                        : linkStatus === "checking"
+                                        ? "status-checking"
+                                        : "status-idle"
+                                }
+                            >
+                                {linkStatus === "ready" && "Ready"}
+                                {linkStatus === "notready" && "Not Ready"}
+                                {linkStatus === "checking" && "Checking..."}
+                                {linkStatus === "idle" && "No Link Loaded"}
+                            </strong>
                         </div>
 
                         <div className="project-detail">
@@ -246,6 +288,7 @@ function LivePreview() {
                                 const currentUrl = previewUrl;
                                 setPreview_Url("");
                                 setTimeout(() => setPreview_Url(currentUrl), 50);
+                                checkLinkStatus(currentUrl);
                             }}
                             disabled={!previewUrl}
                         >
