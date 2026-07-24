@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './AuthPage.css';
 // Import your custom illustration graphic
-import graphicLogo from './logo.png';
+import graphicLogo from './STREAMLINE.png';
+// Small rocket mark shown next to the "STREAMLINE" wordmark
+import brandIcon from './streamline-icon.png';
 
 export default function AuthPage({ onSwitchToRegister, onLoginSuccess }) {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
@@ -45,7 +47,6 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess }) {
     }
   };
 
-  const loginStrength = getPasswordStrength(password);
   const resetStrength = getPasswordStrength(newPassword);
 
   // Countdown effect for the activation step timer
@@ -128,11 +129,7 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess }) {
       {/* Left Column: Interactive Forms */}
       <div className="auth-form-side">
         <div className="brand">
-          {/* Brand Lock Icon - Fixed to #FF7517 */}
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF7517" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="brand-icon">
-            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
+          <img src={brandIcon} alt="Streamline" className="brand-icon-img" />
           <span className="brand-name">STREAMLINE</span>
         </div>
 
@@ -190,14 +187,6 @@ export default function AuthPage({ onSwitchToRegister, onLoginSuccess }) {
                     )}
                   </button>
                 </div>
-                {password && (
-                  <div className="strength-meter">
-                    <div className="strength-bar-container">
-                      <div className="strength-bar" style={{ width: loginStrength.width, backgroundColor: loginStrength.color }}></div>
-                    </div>
-                    <div className="strength-label">Strength: {loginStrength.label}</div>
-                  </div>
-                )}
               </div>
 
               <div className="form-actions">

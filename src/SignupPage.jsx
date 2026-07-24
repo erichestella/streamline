@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./SignupPage.css";
 import FooterLinks from "./FooterLinks";
+// Small rocket mark shown next to the "Streamline" wordmark
+import brandIcon from "./streamline-icon.png";
 
 const initialSignupForm = {
   name: "",
@@ -195,7 +197,7 @@ export default function SignupPage({ onSwitchToLogin }) {
     <div className="page">
       <div className="panel-left">
         <div className="brand">
-          <span className="brand-mark" />
+          <img src={brandIcon} alt="Streamline" className="brand-icon-img" />
           <span className="brand-name">Streamline</span>
         </div>
 
@@ -237,7 +239,7 @@ export default function SignupPage({ onSwitchToLogin }) {
       <div className="panel-right">
         <div className="form-card">
           <div className="brand-powered">
-            <span className="brand-mark" />
+            <img src={brandIcon} alt="Streamline" className="brand-icon-img" />
             <span>
               Streamline{" "}
               <span className="powered">powered by Certicode</span>
