@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { 
   Home, 
   Folder, 
@@ -11,6 +11,7 @@ import {
 import './Dashboard.css'
 import UserIcon from './UserIcon'
 import LivePreview from './LivePreview'
+import DebuggingMode from './DebuggingMode'
 
 function Dashboard() {
   const [activeSidebar, setActiveSidebar] = useState('Home')
@@ -44,6 +45,82 @@ function Dashboard() {
     ))
   }
   
+  // ============================================================
+  // SHARED "Live Preview" <-> "Debugging Mode" state.
+  // Both tabs read/write the same previewUrl + linkStatus so the
+  // link you load in one tab is exactly what shows in the other.
+  // ============================================================
+  const [previewUrl, setPreviewUrl] = useState('')
+  const [linkStatus, setLinkStatus] = useState('idle') // idle | checking | ready | notready
+  const [debugLogs, setDebugLogs] = useState([])
+  const logIdRef = useRef(0)
+  const prevNavRef = useRef(activeNav)
+
+  const addLog = (message, type = 'info') => {
+    logIdRef.current += 1
+    const time = new Date().toLocaleTimeString([], { hour12: false })
+    setDebugLogs(prev => [...prev.slice(-49), { id: logIdRef.current, type, message, time }])
+  }
+
+  // Pings the host (no-cors, so we only learn "it responded" vs "it didn't")
+  // and logs the result like a terminal running a command.
+  const checkLinkStatus = async (url) => {
+    if (!url) return
+    setLinkStatus('checking')
+    addLog(`Checking connection to ${url} ...`)
+
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 8000)
+
+    try {
+      await fetch(url, { mode: 'no-cors', cache: 'no-store', signal: controller.signal })
+      setLinkStatus('ready')
+      addLog('Connection established — preview is live.', 'success')
+    } catch (error) {
+      setLinkStatus('notready')
+      addLog('Unable to reach host. It may be down, blocking requests, or the URL is invalid.', 'error')
+    } finally {
+      clearTimeout(timeoutId)
+    }
+  }
+
+  // Called from Live Preview when a new URL is loaded, or cleared ('').
+  const loadPreviewUrl = (url) => {
+    if (!url) {
+      setPreviewUrl('')
+      setLinkStatus('idle')
+      setDebugLogs([])
+      return
+    }
+    setPreviewUrl(url)
+    addLog(`$ Loading preview -> ${url}`)
+    checkLinkStatus(url)
+  }
+
+  // Shared refresh: remounts the iframe (in whichever tab is showing it)
+  // and re-checks the link, instead of leaving a stale preview sitting there.
+  const refreshPreview = () => {
+    if (!previewUrl) return
+    const current = previewUrl
+    addLog('$ Refreshing preview...')
+    setPreviewUrl('')
+    setTimeout(() => setPreviewUrl(current), 50)
+    checkLinkStatus(current)
+  }
+
+  // Re-verify the connection whenever the user switches INTO Debugging Mode,
+  // so the status/logs shown there are never left over from before.
+  // (Intentionally only re-runs on activeNav changes — checkLinkStatus/previewUrl
+  // are read fresh via closure each render, not deps we want retriggering this.)
+  useEffect(() => {
+    if (activeNav === 'Debugging Mode' && prevNavRef.current !== 'Debugging Mode' && previewUrl) {
+      addLog('Switched to Debugging Mode — re-verifying connection...')
+      checkLinkStatus(previewUrl)
+    }
+    prevNavRef.current = activeNav
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeNav])
+
   const navItems = ['Home', 'Live Preview', 'Debugging Mode']
 
   return (
@@ -225,42 +302,23 @@ function Dashboard() {
           )}
 
           {/* ================= LIVE PREVIEW TAB ================= */}
-          {activeNav === 'Live Preview' && <LivePreview />}
+          {activeNav === 'Live Preview' && (
+            <LivePreview
+              previewUrl={previewUrl}
+              linkStatus={linkStatus}
+              onLoadPreview={loadPreviewUrl}
+              onRefresh={refreshPreview}
+            />
+          )}
 
           {/* ================= DEBUGGING MODE TAB ================= */}
           {activeNav === 'Debugging Mode' && (
-            <div className="debug-container">
-              <div className="debug-header">
-                <div className="status-indicator live">
-                  <span className="dot">●</span> Status: Live Testing
-                </div>
-                <div className="comment-panel">
-                  <input type="text" placeholder="Mag-iwan ng komento para sa ka-grupo..." />
-                  <button onClick={() => alert('Comment sent!')}>Send</button>
-                </div>
-              </div>
-
-              <div className="split-panel">
-                <div className="left-panel">
-                  <div className="panel-header">
-                    <h3>Project Preview</h3>
-                  </div>
-                  {/* Pwede nyo palitan yung src ng link ng local project nyo or external website */}
-                  <iframe src="https://example.com" title="Project Preview HTML"></iframe>
-                </div>
-
-                <div className="right-panel">
-                  <div className="panel-header">
-                    <h3>Console Logs</h3>
-                  </div>
-                  <div className="log-scroll">
-                    <div className="log-item info">[INFO] Pipeline built successfully.</div>
-                    <div className="log-item warning">[WARN] Deprecated API call detected on line 42.</div>
-                    <div className="log-item error">[ERROR] Failed to load resource: 404 Not Found.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <DebuggingMode
+              status={linkStatus}
+              logs={debugLogs}
+              previewUrl={previewUrl}
+              onRefresh={refreshPreview}
+            />
           )}
 
         </main>

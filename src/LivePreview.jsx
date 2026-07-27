@@ -1,12 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import "./LivePreview.css";
 
-function LivePreview() {
+function LivePreview({ previewUrl, linkStatus, onLoadPreview, onRefresh }) {
     const [inputUrl, setInput_Url] = useState("");
-    const [previewUrl, setPreview_Url] = useState("");
     const [view_Mode, setView_Mode] = useState("preview");
     const [message, set_Message] = useState("");
-    const [linkStatus, setLinkStatus] = useState("idle"); // "idle" | "checking" | "ready" | "notready"
 
     const containerRef = useRef(null);
     const [scale, setScale] = useState(1);
@@ -47,29 +45,6 @@ function LivePreview() {
         return trimmed_Url;
     };
 
-    const checkLinkStatus = async (url) => {
-        setLinkStatus("checking");
-
-        const controller = new AbortController();
-        // If the host doesn't respond within 8s, treat it as not ready
-        // instead of leaving the status stuck on "Checking..." forever.
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-        try {
-            // "no-cors" is required since most preview targets (Vercel, Netlify, etc.)
-            // won't send CORS headers back to us. That means we can't read the actual
-            // status code, but a resolved (even opaque) response tells us the host
-            // responded, while a thrown error means it's unreachable — no response,
-            // DNS failure, connection refused, timed out, blocked, etc.
-            await fetch(url, { mode: "no-cors", cache: "no-store", signal: controller.signal });
-            setLinkStatus("ready");
-        } catch (error) {
-            setLinkStatus("notready");
-        } finally {
-            clearTimeout(timeoutId);
-        }
-    };
-
     const loadPreview = () => {
         const formatted_Url = format_Url(inputUrl);
 
@@ -78,16 +53,15 @@ function LivePreview() {
             return;
         }
 
-        setPreview_Url(formatted_Url);
         set_Message("");
-        checkLinkStatus(formatted_Url);
+        // Lifted up to Dashboard so Debugging Mode sees the same URL/status.
+        onLoadPreview(formatted_Url);
     };
 
     const clearInput = () => {
         setInput_Url("");
-        setPreview_Url("");
         set_Message("");
-        setLinkStatus("idle");
+        onLoadPreview(""); // clears the shared preview + resets Debugging Mode too
     };
 
     const copylink = async () => {
@@ -167,9 +141,7 @@ function LivePreview() {
                                     set_Message("");
 
                                     if (newUrl.trim() === "") {
-                                        setPreview_Url("");
-                                        set_Message("");
-                                        setLinkStatus("idle");
+                                        onLoadPreview("");
                                     }
                                 }}
                                 onKeyDown={(event) => {
@@ -284,12 +256,7 @@ function LivePreview() {
                         <button
                             className="refresh-butt"
                             type="button"
-                            onClick={() => {
-                                const currentUrl = previewUrl;
-                                setPreview_Url("");
-                                setTimeout(() => setPreview_Url(currentUrl), 50);
-                                checkLinkStatus(currentUrl);
-                            }}
+                            onClick={onRefresh}
                             disabled={!previewUrl}
                         >
                             Refresh
