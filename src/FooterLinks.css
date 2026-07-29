@@ -21,6 +21,9 @@
   background: transparent;
   border: none;
   padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: #b8afaf;
   font-family: "Inter", system-ui, -apple-system, sans-serif;
   font-size: 12px;
@@ -32,6 +35,11 @@
 .footer-link-btn:focus-visible {
   color: #ff7517;
   opacity: 1;
+}
+
+.footer-link-icon {
+  font-size: 13px;
+  line-height: 1;
 }
 
 .footer-link-btn:focus-visible {
@@ -107,19 +115,42 @@
   text-align: left;
 }
 
-.modal-scroll-content ul,
-.modal-scroll-content ol {
-  padding-left: 20px;
+.modal-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
   margin-bottom: 20px;
+}
+
+.modal-feature-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
   text-align: left;
 }
 
-.modal-scroll-content li {
+.modal-feature-icon {
+  flex-shrink: 0;
+  margin-top: 3px;
+  font-size: 16px;
+  color: #ff7517;
+  width: 18px;
+  text-align: center;
+}
+
+.modal-feature-item h4 {
   font-size: 14px;
+  font-weight: 700;
+  color: #f6f4f4;
+  margin: 0 0 4px;
+}
+
+.modal-feature-item p {
+  font-size: 13.5px;
   line-height: 1.6;
   color: #f6f4f4;
   opacity: 0.85;
-  margin-bottom: 10px;
+  margin: 0;
 }
 
 .footer-modal-close-btn {

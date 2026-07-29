@@ -42,6 +42,13 @@
   color: var(--primary-color);
 }
 
+.brand-icon-img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .form-box {
   margin: auto 0;
   background: var(--card-bg);

@@ -1,12 +1,14 @@
-/* Container: Full height to fill the dashboard space */
+/* Container: fills the dashboard space but is allowed to grow taller than
+   the viewport — the dashboard's own content area scrolls, so nothing here
+   gets clipped and the whole page can be scrolled into view. */
 .debug-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100%;
   width: 100%;
   background-color: #1e1e1e;
   color: #ffffff;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Header: Deployment status and Annotation tool */
@@ -27,6 +29,8 @@
 
 .status-indicator.live { color: #2ecc71; }
 .status-indicator.failed { color: #e74c3c; }
+.status-indicator.checking { color: #f0ad4e; }
+.status-indicator.idle { color: #888; }
 
 /* Annotation Tool Styling */
 .comment-panel {
@@ -59,11 +63,16 @@
   opacity: 0.9;
 }
 
+.comment-panel button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .split-panel {
   display: flex;
   flex: 1;
-  overflow: hidden;
-  height: 100%; /* Ensure it fills the parent */
+  overflow: visible;
+  min-height: 620px; /* so the preview + logs are never squeezed too short */
 }
 
 /* Left: Live View */
@@ -73,7 +82,8 @@
   display: flex;
   flex-direction: column; /* Stacks Title and Iframe */
   background-color: #1a1a1a;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .left-panel h3 {
@@ -81,12 +91,17 @@
   color: #666;
   font-size: 0.9rem;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .left-panel iframe {
   width: 100%;
   height: 100%;
+  min-height: 900px; /* guarantees the full page renders instead of being
+    squeezed to whatever height flex allots — .left-panel's own scroll
+    (above) is what lets you reach everything below the fold */
   border: none;
+  flex-shrink: 0;
 }
 
 /* Right: Logs Panel */
@@ -112,6 +127,44 @@
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
   font-size: 0.85rem;
   color: #ddd;
+}
+
+.log-time {
+  margin-right: 6px;
+  color: #777;
+}
+
+.log-item.info { color: #ddd; }
+.log-item.success { color: #2ecc71; }
+.log-item.warning { color: #f0ad4e; }
+.log-item.error { color: #e74c3c; }
+
+.no-logs {
+  color: #777;
+  font-style: italic;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 0.85rem;
+}
+
+/* Terminal-style blinking cursor, shown while a check is running */
+.terminal-cursor-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  color: #2ecc71;
+}
+
+.terminal-cursor {
+  width: 8px;
+  height: 14px;
+  background: #2ecc71;
+  animation: terminal-blink 1s steps(1) infinite;
+}
+
+@keyframes terminal-blink {
+  50% { opacity: 0; }
 }
 
 .iframe-placeholder {
@@ -144,8 +197,8 @@
   .comment-panel input,
   .comment-panel button { width: 100%; }
   .split-panel { flex-direction: column; min-height: 0; height: auto; overflow: visible; }
-  .left-panel { flex: none; min-height: 320px; border-right: 0; border-bottom: 1px solid #333; }
-  .left-panel iframe,
+  .left-panel { flex: none; min-height: 320px; max-height: 480px; border-right: 0; border-bottom: 1px solid #333; }
+  .left-panel iframe { min-height: 700px; }
   .iframe-placeholder { min-height: 320px; }
   .right-panel { flex: none; min-height: 260px; max-height: 360px; padding: 16px; }
 }
