@@ -19,9 +19,7 @@ function Dashboard() {
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
 
-  // Refs for the two mobile card carousels (Quick Access + Recent Projects).
-  // The arrow buttons just nudge scrollLeft; on tablet/desktop these arrows
-  // are hidden via CSS and the containers use their normal flex layout.
+
   const quickAccessRef = useRef(null)
   const projectListRef = useRef(null)
 
